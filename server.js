@@ -1,24 +1,32 @@
-const express = require('express')
-const app = express()
-const MongoClient = require('mongodb').MongoClient
-const PORT = 2121
+const express = require('express')  // Load the express so we can use it in the file
+ const app = express() // We call express() and store the server in 'app' so we can use all its methods without writing express each time
+
+ const MongoClient = require('mongodb').MongoClient; // Load MongoClient from the mongodb  to connect to MongoDB
+
+const PORT = 2121  // Listining od port 2122
 require('dotenv').config()
 
 
-let db,
-    dbConnectionStr = process.env.DB_STRING,
-    dbName = 'todo'
 
+
+    let db, // will hold our database connection
+    dbConnectionStr = process.env.DB_STRING, // get the database connection string from .env
+    dbName = 'todo' // name of the database we want to use
+
+// Connect to MongoDB using the connection string
 MongoClient.connect(dbConnectionStr, { useUnifiedTopology: true })
     .then(client => {
-        console.log(`Connected to ${dbName} Database`)
-        db = client.db(dbName)
+        console.log(`Connected to ${dbName} Database`) // confirm connection
+        db = client.db(dbName) // store the database connection in 'db'
     })
+
     
-app.set('view engine', 'ejs')
-app.use(express.static('public'))
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+app.set('view engine', 'ejs') // Tell Express to use EJS for rendering views
+app.use(express.static('public')) // Let Express serve files from the 'public' folder (CSS, JS, images, etc.)
+app.use(express.urlencoded({ extended: true })) // Read form data from POST requests
+
+app.use(express.json()) // Take JSON data from requests and put it into req.body
+
 
 
 app.get('/',/*async*/ (request, response)=>{
