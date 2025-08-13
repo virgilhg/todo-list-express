@@ -28,26 +28,27 @@ app.use(express.urlencoded({ extended: true })) // Read form data from POST requ
 app.use(express.json()) // Take JSON data from requests and put it into req.body
 
 
-
+// Homepage: get all todos, count what's left, then render the EJS view
 app.get('/',/*async*/ (request, response)=>{
     // const todoItems = await db.collection('todos').find().toArray()
     // const itemsLeft = await db.collection('todos').countDocuments({completed: false})
     // response.render('index.ejs', { items: todoItems, left: itemsLeft })
-    db.collection('todos').find().toArray()
+    db.collection('todos').find().toArray() // grab all todos as an array
     .then(data => {
-        db.collection('todos').countDocuments({completed: false})
+        db.collection('todos').countDocuments({completed: false}) // count the incompletes
         .then(itemsLeft => {
-            response.render('index.ejs', { items: data, left: itemsLeft })
+            response.render('index.ejs', { items: data, left: itemsLeft }) // send data to EJS
         })
     })
-    .catch(error => console.error(error))
+    .catch(error => console.error(error))  // log any DB errors
 })
 
+// Add a new todo from the form
 app.post('/addTodo', (request, response) => {
-    db.collection('todos').insertOne({thing: request.body.todoItem, completed: false})
+    db.collection('todos').insertOne({thing: request.body.todoItem, completed: false}) // insert one document, text from the form input name="todoItem", and  new todos will start incomplete
     .then(result => {
         console.log('Todo Added')
-        response.redirect('/')
+        response.redirect('/') // reload homepage so it appears
     })
     .catch(error => console.error(error))
 })
